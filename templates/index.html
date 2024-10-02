@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evidence pracovní doby</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #333;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .header {
+            background-color: #222;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 33vh;
+        }
+        .logo {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+        }
+        .info-bar {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background-color: #444;
+        }
+        .title {
+            text-align: center;
+            padding: 10px;
+            font-size: 24px;
+            background-color: #555;
+        }
+        .nav {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px;
+            background-color: #666;
+        }
+        .nav a {
+            color: #fff;
+            text-decoration: none;
+        }
+        .main {
+            flex-grow: 1;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="./static/images/logo.png" alt="Logo" class="logo">
+    </div>
+    
+    <div class="info-bar">
+        <div id="current-week"></div>
+        <div id="current-date"></div>
+    </div>
+
+    <div class="title">
+        Evidence pracovní doby
+    </div>
+
+    <div class="nav">
+    <a href="{{ url_for('manage_employees') }}">Zaměstnanci</a>
+    <a href="{{ url_for('record_time') }}">Záznam pracovní doby</a>
+    <a href="{{ url_for('zalohy') }}">Zálohy</a>
+</div>
+
+    <div class="main">
+        <div role="main">
+            Vítejte v systému evidence pracovní doby.
+        </div>
+    </div>
+
+    <script>
+        function updateDateAndWeek() {
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('current-date').textContent = now.toLocaleDateString('cs-CZ', options);
+
+            const start = new Date(now.getFullYear(), 0, 1);
+            const diff = now - start;
+            const oneWeek = 1000 * 60 * 60 * 24 * 7;
+            const weekNumber = Math.floor(diff / oneWeek) + 1;
+            document.getElementById('current-week').textContent = `Týden ${weekNumber}`;
+        }
+
+        updateDateAndWeek();
+        setInterval(updateDateAndWeek, 60000); // Aktualizace každou minutu
+    </script>
+</body>
+</html>

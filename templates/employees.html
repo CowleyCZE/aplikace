@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Správa zaměstnanců</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #333;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        h1 {
+            color: #333;
+        }
+        .flash-message {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .flash-message.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .flash-message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        form {
+            margin-bottom: 10px;
+        }
+        input[type="text"] {
+            padding: 5px;
+            margin-right: 10px;
+            color: #fff;
+            background-color: #333;
+        }
+        button {
+            padding: 5px 10px;
+            background-color: #004EA3;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        button:hover {
+            background-color: #004EA3;
+        }
+        button.delete {
+            background-color: #004EA3;
+        }
+        button.delete:hover {
+            background-color: #c82333;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Správa zaměstnanců</h1>
+    
+    <a href="{{ url_for('index') }}">Zpět na hlavní stránku</a>
+
+    <div role="main">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div id="add-employee" class="section">
+            <h2>Přidat zaměstnance</h2>
+            <form method="POST" action="{{ url_for('manage_employees') }}">
+                <input type="hidden" name="action" value="add">
+                <label for="name">Jméno zaměstnance:</label>
+                <input type="text" id="name" name="name" required>
+                <button type="submit">Přidat zaměstnance</button>
+            </form>
+        </div>
+
+        <div id="employee-list" class="section">
+            <h2>Seznam zaměstnanců</h2>
+            {% if employees %}
+                <ul>
+                {% for employee in employees %}
+                    <li>
+                        <form method="POST" action="{{ url_for('manage_employees') }}" style="display: inline;">
+                            <input type="hidden" name="action" value="update">
+                            <input type="hidden" name="index" value="{{ loop.index }}">
+                            <input type="text" name="name" value="{{ employee.name }}" required>
+                            <button type="submit">Upravit</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('manage_employees') }}" style="display: inline;">
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="index" value="{{ loop.index }}">
+                            <button type="submit" class="delete">Smazat</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('manage_employees') }}" style="display: inline;">
+                            <input type="hidden" name="action" value="toggle">
+                            <input type="hidden" name="index" value="{{ loop.index }}">
+                            <button type="submit">
+                                {% if employee.selected %}Odznačit{% else %}Označit{% endif %}
+                            </button>
+                        </form>
+                    </li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p>Zatím nejsou přidáni žádní zaměstnanci.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Správa zaměstnanců</p>
+    </footer>
+</body>
+</html>
