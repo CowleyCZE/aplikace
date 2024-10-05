@@ -1,6 +1,7 @@
 import os
 from openpyxl import load_workbook, Workbook
 import logging
+from datetime import datetime
 
 logging.basicConfig(filename='zalohy.log', level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
@@ -38,44 +39,34 @@ class ZalohyManager:
                 return row
         return None
 
-    def add_employee_advance(self, employee_name, amount, currency):
-        workbook = self.nacti_nebo_vytvor_excel()
-        sheet = workbook[self.ZALOHY_SHEET_NAME]
-        row = self.get_employee_row(employee_name)
-        
-        if row is None:
-            row = self.get_next_empty_row(sheet)
-            sheet.cell(row=row, column=1, value=employee_name)
-        
-        if currency == '€':
-            current_value = sheet.cell(row=row, column=2).value or 0
-            sheet.cell(row=row, column=2, value=current_value + amount)
-        else:
-            current_value = sheet.cell(row=row, column=3).value or 0
-            sheet.cell(row=row, column=3, value=current_value + amount)
-        
-        workbook.save(self.excel_cesta)
-        logging.info(f"Záloha pro {employee_name} aktualizována: {amount} {currency}")
-        
-    def update_employee_advance(self, row, amount, currency):
-        """Updates the advance amount for an existing employee."""
-        workbook = self.nacti_nebo_vytvor_excel()
-        sheet = workbook[self.ZALOHY_SHEET_NAME]
-        
-        if currency == '€':
-            current_value = sheet[f'B{row}'].value
-            if current_value is None:
-                sheet[f'B{row}'] = amount
-            else:
-                sheet[f'B{row}'] = current_value + amount
-        else:
-            current_value = sheet[f'C{row}'].value
-            if current_value is None:
-                sheet[f'C{row}'] = amount
-            else:
-                sheet[f'C{row}'] = current_value + amount
-        
-        workbook.save(self.excel_cesta)
+    def add_or_update_employee_advance(self, employee_name, amount, currency, option, date):
+        try:
+            workbook = self.nacti_nebo_vytvor_excel()
+            sheet = workbook[self.ZALOHY_SHEET_NAME]
+            row = self.get_employee_row(employee_name)
+            
+            if row is None:
+                row = self.get_next_empty_row(sheet)
+                sheet.cell(row=row, column=1, value=employee_name)
+            
+            if option == 'option1':
+                column = 2 if currency == 'EUR' else 3
+            else:  # option2
+                column = 4 if currency == 'EUR' else 5
+            
+            current_value = sheet.cell(row=row, column=column).value or 0
+            sheet.cell(row=row, column=column, value=current_value + amount)
+            
+            # Přidání data zálohy
+            date_column = 26  # Předpokládáme, že datum bude v sloupci Z
+            sheet.cell(row=row, column=date_column, value=datetime.strptime(date, '%Y-%m-%d').date())
+            
+            workbook.save(self.excel_cesta)
+            logging.info(f"Záloha pro {employee_name} aktualizována: {amount} {currency} ({option}) k datu {date}")
+            return True
+        except Exception as e:
+            logging.error(f"Chyba při ukládání zálohy: {e}")
+            return False
 
     def get_next_empty_row(self, sheet):
         for row in range(self.EMPLOYEE_START_ROW, sheet.max_row + 2):
@@ -90,13 +81,23 @@ class ZalohyManager:
         if row is None:
             return None
         return {
-            'EUR': sheet.cell(row=row, column=2).value or 0,
-            'CZK': sheet.cell(row=row, column=3).value or 0
+            'Option1_EUR': sheet.cell(row=row, column=2).value or 0,
+            'Option1_CZK': sheet.cell(row=row, column=3).value or 0,
+            'Option2_EUR': sheet.cell(row=row, column=4).value or 0,
+            'Option2_CZK': sheet.cell(row=row, column=5).value or 0
         }
+
+    def get_option_names(self):
+        workbook = self.nacti_nebo_vytvor_excel()
+        sheet = workbook[self.ZALOHY_SHEET_NAME]
+        option1_name = sheet['B80'].value or 'Option 1'
+        option2_name = sheet['D80'].value or 'Option 2'
+        return option1_name, option2_name
 
 if __name__ == "__main__":
     # Test code
     manager = ZalohyManager()
-    manager.add_or_update_employee_advance("Jan Novák", 100, '€')
-    manager.add_or_update_employee_advance("Jan Novák", 2000, 'Kč')
+    manager.add_or_update_employee_advance("Jan Novák", 100, 'EUR', 'option1', '2023-05-01')
+    manager.add_or_update_employee_advance("Jan Novák", 2000, 'CZK', 'option2', '2023-05-02')
     print(manager.get_employee_advances("Jan Novák"))
+    print(manager.get_option_names())

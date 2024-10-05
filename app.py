@@ -99,27 +99,27 @@ def record_time():
 @app.route('/zalohy', methods=['GET', 'POST'])
 def zalohy():
     if request.method == 'POST':
-        # Get the employee name, amount, currency, and date from the form
         employee_name = request.form.get('employee_name')
         amount = float(request.form.get('amount'))
-        currency = request.form.get('currency', '€')
+        currency = request.form.get('currency')
+        option = request.form.get('option')
+        date = request.form.get('date')
 
-        # Get the correct row for the employee
-        existing_employee_row = zalohy_manager.get_employee_row(employee_name)
-
-        if existing_employee_row is None:
-            # Add a new entry if the employee doesn't exist
-            zalohy_manager.add_employee_advance(employee_name, amount, currency)
-            flash(f'Záloha pro zaměstnance {employee_name} byla úspěšně přidána.', 'success')
-        else:
-            # Update the existing employee's advance
-            zalohy_manager.update_employee_advance(existing_employee_row, amount, currency)
-            flash(f'Záloha pro zaměstnance {employee_name} byla aktualizována.', 'success')
+        try:
+            success = zalohy_manager.add_or_update_employee_advance(employee_name, amount, currency, option, date)
+            if success:
+                flash(f'Záloha pro zaměstnance {employee_name} byla úspěšně zapsána.', 'success')
+            else:
+                flash('Chyba při zápisu zálohy do Excel souboru.', 'error')
+        except Exception as e:
+            flash(f'Chyba při zpracování zálohy: {str(e)}', 'error')
 
         return redirect(url_for('zalohy'))
 
     employees = employee_manager.zamestnanci
-    return render_template('zalohy.html', employees=employees, current_date=datetime.today().strftime('%Y-%m-%d'))
+    option1_name, option2_name = zalohy_manager.get_option_names()
+    return render_template('zalohy.html', employees=employees, current_date=datetime.today().strftime('%Y-%m-%d'),
+                           option1_name=option1_name, option2_name=option2_name)
 
 if __name__ == '__main__':
     app.run(debug=True)
