@@ -6,12 +6,13 @@ from zalohy_manager import ZalohyManager
 from dropbox_manager import DropboxManager
 import logging
 import os
+import config  # Import konfiguračního souboru
 
 app = Flask(__name__)
 app.secret_key = 'tajny_klic_pro_flash_zpravy'
 
 # Inicializace Dropbox manageru
-DROPBOX_ACCESS_TOKEN = sl.B-W367rLOsqRVLsTvZSKuP19T1xtxxWnbrY9uMI4MZTZeWc_Fadhz96Fc9D8GwYQx6zYAdSEX9G6mmeevabQz3SYZWbSel2oiAYWQKdjQH_WO4O5FDsAnz5gvCWnsWyb-Ay2qjpkKTzsqG5y5Hq429g  # Nahraďte svým skutečným tokenem
+DROPBOX_ACCESS_TOKEN = config.DROPBOX_ACCESS_TOKEN
 dropbox_manager = DropboxManager(DROPBOX_ACCESS_TOKEN)
 
 employee_manager = EmployeeManagement(dropbox_manager)
