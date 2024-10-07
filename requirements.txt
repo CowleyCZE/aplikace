@@ -40,13 +40,10 @@ PyRect==0.2.0
 PyScreeze==0.1.30
 python-for-android==2024.1.21
 pytweening==1.2.0
-pywin32==306
 requests==2.32.3
 setuptools==71.1.0
 sh==2.0.7
-soupsieve==2.5
 toml==0.10.2
 urllib3==2.2.2
-virtualenv==20.26.4
 Werkzeug==3.0.4
 wheel==0.43.0
