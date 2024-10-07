@@ -243,3 +243,13 @@
 2024-10-05 23:58:44,295 - INFO - Pøístup na hlavní stránku
 2024-10-05 23:58:44,296 - INFO - 127.0.0.1 - - [05/Oct/2024 23:58:44] "GET / HTTP/1.1" 200 -
 2024-10-05 23:58:44,334 - INFO - 127.0.0.1 - - [05/Oct/2024 23:58:44] "[36mGET /static/images/logo.png HTTP/1.1[0m" 304 -
+2024-10-07 19:44:03,390 - INFO - Naètena konfigurace: 6 zamìstnancù, 4 vybraných
+2024-10-07 19:44:03,408 - INFO - Inicializována tøída EmployeeManagement
+2024-10-07 19:44:11,712 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-10-07 19:44:11,712 - INFO - [33mPress CTRL+C to quit[0m
+2024-10-07 19:44:11,742 - INFO -  * Restarting with stat
+2024-10-07 19:44:24,856 - INFO - Naètena konfigurace: 6 zamìstnancù, 4 vybraných
+2024-10-07 19:44:24,857 - INFO - Inicializována tøída EmployeeManagement
+2024-10-07 19:44:26,606 - WARNING -  * Debugger is active!
+2024-10-07 19:44:26,643 - INFO -  * Debugger PIN: 204-318-965
