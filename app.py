@@ -140,4 +140,5 @@ def zalohy():
                            option1_name=option1_name, option2_name=option2_name)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
+input("Stiskněte Enter pro ukončení...")
